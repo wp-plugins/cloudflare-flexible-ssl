@@ -3,7 +3,7 @@
  * Plugin Name: CloudFlare Flexible SSL
  * Plugin URI: http://icwp.io/2f
  * Description: Fix For CloudFlare Flexible SSL Redirect Loop For WordPress
- * Version: 1.2.0
+ * Version: 1.2.1
  * Text Domain: cloudflare-flexible-ssl
  * Author: iControlWP
  * Author URI: http://icwp.io/2e
@@ -45,8 +45,14 @@ class ICWP_Cloudflare_Flexible_SSL {
 	public function getActivePluginLoadPosition( $sPluginFile ) {
 		$sOptionKey = is_multisite() ? 'active_sitewide_plugins' : 'active_plugins';
 		$aActive = get_option( $sOptionKey );
-		$nPosition = array_search( $sPluginFile, $aActive );
-		return ( $nPosition === false ) ? -1 : $nPosition;
+		$nPosition = -1;
+		if ( is_array( $aActive ) ) {
+			$nPosition = array_search( $sPluginFile, $aActive );
+			if ( $nPosition === false ) {
+				$nPosition = -1;
+			}
+		}
+		return $nPosition;
 	}
 
 	/**
@@ -72,7 +78,7 @@ class ICWP_Cloudflare_Flexible_SSL {
 	 */
 	public function setArrayValueToPosition( $aSubjectArray, $mValue, $nDesiredPosition ) {
 
-		if ( $nDesiredPosition < 0 ) {
+		if ( $nDesiredPosition < 0 || !is_array( $aSubjectArray ) ) {
 			return $aSubjectArray;
 		}
 
