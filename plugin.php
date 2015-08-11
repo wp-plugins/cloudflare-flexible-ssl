@@ -24,13 +24,15 @@ class ICWP_Cloudflare_Flexible_SSL {
 			}
 		}
 
-		$this->maintainPluginLoadPosition();
+		if ( is_admin() ) {
+			add_action( 'admin_init', array( $this, 'maintainPluginLoadPosition') );
+		}
 	}
 
 	/**
 	 * Sets this plugin to be the first loaded of all the plugins.
 	 */
-	protected function maintainPluginLoadPosition() {
+	public function maintainPluginLoadPosition() {
 		$sBaseFile = plugin_basename( __FILE__ );
 		$nLoadPosition = $this->getActivePluginLoadPosition( $sBaseFile );
 		if ( $nLoadPosition > 1 ) {
